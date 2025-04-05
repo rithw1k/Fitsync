@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | FitSync</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <script defer src="{% static 'js/login.js' %}"></script>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="circular-progress"></div>
+    </div>
+
+    <div class="container">
+        <div class="login-box">
+            <h2>Welcome to FitSync</h2>
+            <div class="logo">
+                <img src="{% static 'images/logo.png' %}" alt="FitSync Logo">
+            </div>
+            <form method="POST" id="loginForm">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit" id="loginBtn">Login</button>
+            </form>
+        </div>
+    </div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,355 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="logo-container">
+                <div class="logo-wrapper">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+                </div>
+                <span class="greeting">Hi, Admin</span>
+            </div>
+            <button class="logout-btn" onclick="window.location.href='{% url 'logout' %}'">Logout</button>
+        </header>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="dashboard-nav">
+            <div class="nav-item">
+                <button class="nav-btn" onclick="window.location.href='{% url 'dashboard' %}'">Home</button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-btn">Trainers ▼</button>
+                <div class="dropdown">
+                    <a href="{% url 'add_trainer' %}">Add</a>
+                    <a href="{% url 'manage_trainers' %}">Manage</a>
+                    <a href="{% url 'review_admin' %}">Reviews</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <button class="nav-btn">Products ▼</button>
+                <div class="dropdown">
+                    <a href="{% url 'add_product' %}">Add</a>
+                    <a href="{% url 'manage_products' %}">Manage</a>
+                </div>
+            </div>
+            <div class="nav-item active">
+                <button class="nav-btn" onclick="window.location.href='{% url 'users' %}'">Users</button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-btn" onclick="window.location.href='{% url 'orders' %}'">Orders</button>
+            </div>
+        </nav>
+
+        <!-- Users Table -->
+        <div class="table-container">
+            <h2 class="form-title">Manage Users</h2>
+            <!-- Send Email Button -->
+            <div class="action-container">
+                <button class="send-email-btn">Send Email to All</button>
+            </div>
+            <table class="futuristic-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Created At</th>
+                        <th>Mark Attendance</th>
+                        <th>View History</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr data-user-id="{{ user.id }}">
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            <select class="attendance-select" name="attendance">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                            </select>
+                            <button class="edit-btn mark-attendance-btn">Mark</button>
+                        </td>
+                        <td>
+                            <button class="view-history-btn">View History</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">No users found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Attendance History Modal -->
+        <div id="history-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <h2>Attendance History</h2>
+                <div class="filter-container">
+                    <label for="history-filter-type">Filter by:</label>
+                    <select id="history-filter-type">
+                        <option value="all">All</option>
+                        <option value="date">Date</option>
+                        <option value="month">Month</option>
+                        <option value="year">Year</option>
+                    </select>
+                    <input type="date" id="history-filter-date" style="display: none;">
+                    <input type="month" id="history-filter-month" style="display: none;">
+                    <input type="number" id="history-filter-year" placeholder="Enter year" style="display: none;">
+                    <button class="edit-btn" onclick="applyHistoryFilter()">Apply Filter</button>
+                </div>
+                <table class="futuristic-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <!-- History will be populated via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Send Email Modal -->
+        <div id="email-modal" class="modal">
+            <div class="modal-content">
+                <span class="close email-close">×</span>
+                <h2>Send Email to All Users</h2>
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="email-subject">Subject</label>
+                        <input type="text" id="email-subject" placeholder="Enter email subject">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-body">Body</label>
+                        <textarea id="email-body" placeholder="Enter email body"></textarea>
+                    </div>
+                    <button class="edit-btn send-email-submit">Send Email</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const nav = document.querySelector('.dashboard-nav');
+        
+        menuToggle.addEventListener('click', function() {
+            nav.classList.toggle('active');
+            menuToggle.classList.toggle('open');
+        });
+
+        // Handle dropdowns in mobile view
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    const dropdown = this.nextElementSibling;
+                    if (dropdown) {
+                        dropdown.classList.toggle('active');
+                    }
+                }
+            });
+        });
+
+        // Mark Attendance
+        document.querySelectorAll('.mark-attendance-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const userId = row.dataset.userId;
+                const status = row.querySelector('.attendance-select').value;
+                const formData = new FormData();
+                formData.append('action', 'mark_attendance');
+                formData.append('user_id', userId);
+                formData.append('status', status);
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+                fetch("{% url 'users' %}", {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => alert('An error occurred: ' + error.message));
+            });
+        });
+
+        // Modal for Attendance History
+        const historyModal = document.getElementById('history-modal');
+        const historyCloseModal = document.querySelector('.close');
+        let currentUserId = null;
+
+        document.querySelectorAll('.view-history-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentUserId = this.closest('tr').dataset.userId;
+                historyModal.style.display = 'block';
+                fetchHistory(currentUserId, 'all', '');
+            });
+        });
+
+        historyCloseModal.addEventListener('click', function() {
+            historyModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target == historyModal) {
+                historyModal.style.display = 'none';
+            }
+        });
+
+        // Show/hide filter inputs based on filter type
+        document.getElementById('history-filter-type').addEventListener('change', function() {
+            const filterType = this.value;
+            document.getElementById('history-filter-date').style.display = filterType === 'date' ? 'block' : 'none';
+            document.getElementById('history-filter-month').style.display = filterType === 'month' ? 'block' : 'none';
+            document.getElementById('history-filter-year').style.display = filterType === 'year' ? 'block' : 'none';
+        });
+
+        // Fetch attendance history
+        function fetchHistory(userId, filterType, filterValue) {
+            const formData = new FormData();
+            formData.append('action', 'view_history');
+            formData.append('user_id', userId);
+            formData.append('filter_type', filterType);
+            formData.append('filter_value', filterValue);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch("{% url 'users' %}", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const tbody = document.getElementById('history-table-body');
+                    tbody.innerHTML = '';
+                    if (data.history.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="2">No attendance records found.</td></tr>';
+                    } else {
+                        data.history.forEach(record => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${record.date}</td>
+                                <td>${record.status}</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    }
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => alert('An error occurred: ' + error.message));
+        }
+
+        // Apply history filter
+        function applyHistoryFilter() {
+            const filterType = document.getElementById('history-filter-type').value;
+            let filterValue = '';
+            if (filterType === 'date') {
+                filterValue = document.getElementById('history-filter-date').value;
+            } else if (filterType === 'month') {
+                filterValue = document.getElementById('history-filter-month').value;
+            } else if (filterType === 'year') {
+                filterValue = document.getElementById('history-filter-year').value;
+            }
+            fetchHistory(currentUserId, filterType, filterValue);
+        }
+
+        // Modal for Send Email
+        const emailModal = document.getElementById('email-modal');
+        const emailCloseModal = document.querySelector('.email-close');
+        const sendEmailBtn = document.querySelector('.send-email-btn');
+        const sendEmailSubmit = document.querySelector('.send-email-submit');
+
+        sendEmailBtn.addEventListener('click', function() {
+            emailModal.style.display = 'block';
+        });
+
+        emailCloseModal.addEventListener('click', function() {
+            emailModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target == emailModal) {
+                emailModal.style.display = 'none';
+            }
+        });
+
+        // Send Email
+        sendEmailSubmit.addEventListener('click', function() {
+            const subject = document.getElementById('email-subject').value;
+            const body = document.getElementById('email-body').value;
+            if (!subject || !body) {
+                alert('Please fill in both subject and body.');
+                return;
+            }
+
+            // Disable the button while sending
+            sendEmailSubmit.disabled = true;
+            sendEmailSubmit.textContent = 'Sending...';
+
+            const formData = new FormData();
+            formData.append('action', 'send_email');
+            formData.append('subject', subject);
+            formData.append('body', body);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch("{% url 'users' %}", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Re-enable the button
+                sendEmailSubmit.disabled = false;
+                sendEmailSubmit.textContent = 'Send Email';
+
+                if (data.success) {
+                    alert(data.message);
+                    emailModal.style.display = 'none';
+                    document.getElementById('email-subject').value = '';
+                    document.getElementById('email-body').value = '';
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                // Re-enable the button on error
+                sendEmailSubmit.disabled = false;
+                sendEmailSubmit.textContent = 'Send Email';
+                alert('An error occurred: ' + error.message);
+            });
+        });
+    </script>
+</body>
+</html>
