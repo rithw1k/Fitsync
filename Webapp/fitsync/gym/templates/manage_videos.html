@@ -1,0 +1,259 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Videos</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="logo-container">
+                <div class="logo-wrapper">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+                </div>
+                <span class="greeting">Hi, {{ trainer.name }}</span>
+            </div>
+            <button class="logout-btn" onclick="window.location.href='{% url 'logout' %}'">Logout</button>
+        </header>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="dashboard-nav">
+            <div class="nav-item">
+                <button class="nav-btn" onclick="window.location.href='{% url 'trainer_dashboard' %}'">Home</button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-btn">Users ▼</button>
+                <div class="dropdown">
+                    <a href="{% url 'view_bookings' %}">Bookings</a>
+                    <a href="{% url 'daily_food' %}">Daily Food</a>
+                    <a href="{% url 'review_trainer' %}" >Reviews</a>
+                </div>
+            </div>
+            <div class="nav-item active">
+                <button class="nav-btn">Videos ▼</button>
+                <div class="dropdown">
+                    <a href="{% url 'upload_video' %}">Upload</a>
+                    <a href="{% url 'manage_videos' %}" class="active">Manage</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Videos Table -->
+        <div class="table-container">
+            <h2 class="form-title">Manage Videos</h2>
+            <table class="futuristic-table">
+                <thead>
+                    <tr>
+                        <th>Details</th>
+                        <th>Video</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for video in videos %}
+                    <tr data-video-id="{{ video.id }}">
+                        <td>{{ video.details }}</td>
+                        <td>
+                            <video width="200" controls>
+                                <source src="{{ video.video.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </td>
+                        <td>{{ video.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="edit-btn edit-details-btn">Edit Details</button>
+                                <button class="edit-btn update-video-btn">Update Video</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No videos found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Edit Details Modal -->
+        <div id="edit-details-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <h2>Edit Video Details</h2>
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="edit-details">Details</label>
+                        <textarea id="edit-details" placeholder="Enter video details"></textarea>
+                        <button class="edit-btn save-details-btn">Save Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Video Modal -->
+        <div id="update-video-modal" class="modal">
+            <div class="modal-content">
+                <span class="close update-video-close">×</span>
+                <h2>Update Video</h2>
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="update-video">Select New Video</label>
+                        <input type="file" id="update-video" accept="video/*">
+                        <button class="edit-btn save-video-btn">Upload New Video</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const nav = document.querySelector('.dashboard-nav');
+        
+        menuToggle.addEventListener('click', function() {
+            nav.classList.toggle('active');
+            menuToggle.classList.toggle('open');
+        });
+
+        // Handle dropdowns in mobile view
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    const dropdown = this.nextElementSibling;
+                    if (dropdown) {
+                        dropdown.classList.toggle('active');
+                    }
+                }
+            });
+        });
+
+        // Edit Details Modal
+        const editDetailsModal = document.getElementById('edit-details-modal');
+        const closeEditDetailsModal = document.querySelector('#edit-details-modal .close');
+        let currentVideoId = null;
+
+        document.querySelectorAll('.edit-details-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentVideoId = this.closest('tr').dataset.videoId;
+                const details = this.closest('tr').querySelector('td:first-child').textContent;
+                document.getElementById('edit-details').value = details;
+                editDetailsModal.style.display = 'block';
+            });
+        });
+
+        closeEditDetailsModal.addEventListener('click', function() {
+            editDetailsModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target == editDetailsModal) {
+                editDetailsModal.style.display = 'none';
+            }
+        });
+
+        // Save updated details
+        document.querySelector('.save-details-btn').addEventListener('click', function() {
+            const newDetails = document.getElementById('edit-details').value.trim();
+            if (!newDetails) {
+                alert('Please enter video details.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', 'update_details');
+            formData.append('video_id', currentVideoId);
+            formData.append('details', newDetails);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch("{% url 'manage_videos' %}", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    editDetailsModal.style.display = 'none';
+                    // Update the table
+                    const row = document.querySelector(`tr[data-video-id="${currentVideoId}"]`);
+                    row.querySelector('td:first-child').textContent = newDetails;
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => alert('An error occurred: ' + error.message));
+        });
+
+        // Update Video Modal
+        const updateVideoModal = document.getElementById('update-video-modal');
+        const closeUpdateVideoModal = document.querySelector('.update-video-close');
+
+        document.querySelectorAll('.update-video-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentVideoId = this.closest('tr').dataset.videoId;
+                document.getElementById('update-video').value = ''; // Clear the file input
+                updateVideoModal.style.display = 'block';
+            });
+        });
+
+        closeUpdateVideoModal.addEventListener('click', function() {
+            updateVideoModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target == updateVideoModal) {
+                updateVideoModal.style.display = 'none';
+            }
+        });
+
+        // Save updated video
+        document.querySelector('.save-video-btn').addEventListener('click', function() {
+            const newVideo = document.getElementById('update-video').files[0];
+            if (!newVideo) {
+                alert('Please select a video file.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', 'update_video');
+            formData.append('video_id', currentVideoId);
+            formData.append('video', newVideo);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch("{% url 'manage_videos' %}", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    updateVideoModal.style.display = 'none';
+                    // Reload the page to update the video preview
+                    location.reload();
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => alert('An error occurred: ' + error.message));
+        });
+    </script>
+</body>
+</html>

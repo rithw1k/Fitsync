@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="logo-container">
+                <div class="logo-wrapper">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+                </div>
+                <span class="greeting">Hi, Admin</span>
+            </div>
+            <button class="logout-btn" onclick="window.location.href='{% url 'logout' %}'">Logout</button>
+        </header>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="dashboard-nav">
+            <div class="nav-item">
+                <button class="nav-btn" onclick="window.location.href='{% url 'dashboard' %}'">Home</button>
+            </div>
+            <div class="nav-item">
+                <button class="nav-btn">Trainers ▼</button>
+                <div class="dropdown">
+                    <a href="{% url 'add_trainer' %}">Add</a>
+                    <a href="{% url 'manage_trainers' %}">Manage</a>
+                    <a href="{% url 'review_admin' %}">Reviews</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <button class="nav-btn">Products ▼</button>
+                <div class="dropdown">
+                    <a href="{% url 'add_product' %}">Add</a>
+                    <a href="{% url 'manage_products' %}">Manage</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <button class="nav-btn" onclick="window.location.href='{% url 'users' %}'">Users</button>
+            </div>
+            <div class="nav-item active">
+                <button class="nav-btn" onclick="window.location.href='{% url 'orders' %}'">Orders</button>
+            </div>
+        </nav>
+
+        <!-- Admin Dashboard Title -->
+        <h1 class="dashboard-title">Admin Dashboard</h1>
+
+        <!-- Orders Table -->
+        <div class="table-container">
+            <h2 class="form-title">Manage Orders</h2>
+            <!-- Status Filter Dropdown -->
+            <div class="filter-container">
+                <label for="status-filter">Filter by Status:</label>
+                <select id="status-filter" onchange="filterOrders()">
+                    <option value="All" {% if status_filter == 'All' %}selected{% endif %}>All</option>
+                    <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Delivered" {% if status_filter == 'Delivered' %}selected{% endif %}>Delivered</option>
+                </select>
+            </div>
+            <table class="futuristic-table">
+                <thead>
+                    <tr>
+                        <th>Product Image</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Username</th>
+                        <th>Location</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    {% for item in order.orderitem_set.all %}
+                    <tr data-order-id="{{ order.id }}">
+                        <td>
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="trainer-img">
+                            {% else %}
+                                <span>No Image</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ order.username }}</td>
+                        <td>{{ order.location }}</td>
+                        <td>{{ order.total_price }}</td>
+                        <td>
+                            <select class="status-select" name="status">
+                                <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="edit-btn">Update</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">No orders found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const nav = document.querySelector('.dashboard-nav');
+        
+        menuToggle.addEventListener('click', function() {
+            nav.classList.toggle('active');
+            menuToggle.classList.toggle('open');
+        });
+
+        // Handle dropdowns in mobile view
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    const dropdown = this.nextElementSibling;
+                    if (dropdown) {
+                        dropdown.classList.toggle('active');
+                    }
+                }
+            });
+        });
+
+        // Filter orders by status
+        function filterOrders() {
+            const status = document.getElementById('status-filter').value;
+            window.location.href = "{% url 'orders' %}?status=" + status;
+        }
+
+        // Update order status
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const orderId = row.dataset.orderId;
+                const status = row.querySelector('.status-select').value;
+                const formData = new FormData();
+                formData.append('action', 'update_status');
+                formData.append('order_id', orderId);
+                formData.append('status', status);
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+                fetch("{% url 'orders' %}", {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload(); // Reload to reflect the updated status
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => alert('An error occurred: ' + error.message));
+            });
+        });
+    </script>
+</body>
+</html>

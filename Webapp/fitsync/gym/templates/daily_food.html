@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Food</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="logo-container">
+                <div class="logo-wrapper">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+                </div>
+                <span class="greeting">Hi, {{ trainer.name }}</span>
+            </div>
+            <button class="logout-btn" onclick="window.location.href='{% url 'logout' %}'">Logout</button>
+        </header>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="dashboard-nav">
+            <div class="nav-item">
+                <button class="nav-btn" onclick="window.location.href='{% url 'trainer_dashboard' %}'">Home</button>
+            </div>
+            <div class="nav-item active">
+                <button class="nav-btn">Users ▼</button>
+                <div class="dropdown">
+                    <a href="{% url 'view_bookings' %}">Bookings</a>
+                    <a href="{% url 'daily_food' %}" class="active">Daily Food</a>
+                     <a href="{% url 'review_trainer' %}" >Reviews</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <button class="nav-btn">Videos ▼</button>
+                <div class="dropdown">
+                    <a href="{% url 'upload_video' %}">Upload</a>
+                    <a href="{% url 'manage_videos' %}">Manage</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Daily Food Table -->
+        <div class="table-container">
+            <h2 class="form-title">Daily Food Entries</h2>
+            <table class="futuristic-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Date</th>
+                        <th>Added Details</th>
+                        <th>Comments</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for daily_food in daily_foods %}
+                    <tr data-daily-food-id="{{ daily_food.id }}">
+                        <td>{{ daily_food.username }}</td>
+                        <td>{{ daily_food.date|date:"Y-m-d" }}</td>
+                        <td>{{ daily_food.added_details }}</td>
+                        <td>
+                            <ul class="comment-list">
+                                {% for comment in daily_food.comments %}
+                                <li data-comment-index="{{ forloop.counter0 }}">{{ comment }}</li>
+                                {% empty %}
+                                <li>No comments yet.</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{{ daily_food.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="edit-btn add-comment-btn">Add Comment</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">No daily food entries found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Comment Modal -->
+        <div id="comment-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <h2>Manage Comments</h2>
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="new-comment">Add New Comment</label>
+                        <textarea id="new-comment" placeholder="Enter your comment"></textarea>
+                        <button class="edit-btn submit-comment-btn">Submit Comment</button>
+                    </div>
+                    <div class="form-group">
+                        <h3>Existing Comments</h3>
+                        <ul id="existing-comments" class="comment-list">
+                            <!-- Populated via JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Comment Modal -->
+        <div id="edit-comment-modal" class="modal">
+            <div class="modal-content">
+                <span class="close edit-comment-close">×</span>
+                <h2>Edit Comment</h2>
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="edit-comment-text">Edit Comment</label>
+                        <textarea id="edit-comment-text" placeholder="Edit your comment"></textarea>
+                        <button class="edit-btn save-comment-btn">Save Comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const nav = document.querySelector('.dashboard-nav');
+        
+        menuToggle.addEventListener('click', function() {
+            nav.classList.toggle('active');
+            menuToggle.classList.toggle('open');
+        });
+
+        // Handle dropdowns in mobile view
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    const dropdown = this.nextElementSibling;
+                    if (dropdown) {
+                        dropdown.classList.toggle('active');
+                    }
+                }
+            });
+        });
+
+        // Comment Modal
+        const commentModal = document.getElementById('comment-modal');
+        const editCommentModal = document.getElementById('edit-comment-modal');
+        const closeModal = document.querySelector('#comment-modal .close');
+        const closeEditModal = document.querySelector('.edit-comment-close');
+        let currentDailyFoodId = null;
+        let currentComments = [];
+
+        document.querySelectorAll('.add-comment-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentDailyFoodId = this.closest('tr').dataset.dailyFoodId;
+                const commentList = this.closest('tr').querySelector('.comment-list');
+                currentComments = Array.from(commentList.children)
+                    .filter(li => li.textContent !== 'No comments yet.')
+                    .map(li => li.textContent);
+                
+                // Populate existing comments in the modal
+                const existingCommentsUl = document.getElementById('existing-comments');
+                existingCommentsUl.innerHTML = '';
+                if (currentComments.length === 0) {
+                    existingCommentsUl.innerHTML = '<li>No comments yet.</li>';
+                } else {
+                    currentComments.forEach((comment, index) => {
+                        const li = document.createElement('li');
+                        li.textContent = comment;
+                        li.innerHTML += ` <button class="edit-comment-btn" data-index="${index}">Edit</button>`;
+                        existingCommentsUl.appendChild(li);
+                    });
+                }
+                
+                commentModal.style.display = 'block';
+            });
+        });
+
+        closeModal.addEventListener('click', function() {
+            commentModal.style.display = 'none';
+            document.getElementById('new-comment').value = '';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target == commentModal) {
+                commentModal.style.display = 'none';
+                document.getElementById('new-comment').value = '';
+            }
+        });
+
+        // Submit new comment
+        document.querySelector('.submit-comment-btn').addEventListener('click', function() {
+            const newComment = document.getElementById('new-comment').value.trim();
+            if (!newComment) {
+                alert('Please enter a comment.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', 'update_comments');
+            formData.append('daily_food_id', currentDailyFoodId);
+            formData.append('comment', newComment);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch("{% url 'daily_food' %}", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    commentModal.style.display = 'none';
+                    document.getElementById('new-comment').value = '';
+                    // Update the comment list in the table
+                    const row = document.querySelector(`tr[data-daily-food-id="${currentDailyFoodId}"]`);
+                    const commentList = row.querySelector('.comment-list');
+                    commentList.innerHTML = '';
+                    data.comments.forEach(comment => {
+                        const li = document.createElement('li');
+                        li.textContent = comment;
+                        commentList.appendChild(li);
+                    });
+                    // Update currentComments for the modal
+                    currentComments = data.comments;
+                    const existingCommentsUl = document.getElementById('existing-comments');
+                    existingCommentsUl.innerHTML = '';
+                    currentComments.forEach((comment, index) => {
+                        const li = document.createElement('li');
+                        li.textContent = comment;
+                        li.innerHTML += ` <button class="edit-comment-btn" data-index="${index}">Edit</button>`;
+                        existingCommentsUl.appendChild(li);
+                    });
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => alert('An error occurred: ' + error.message));
+        });
+
+        // Edit comment
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('edit-comment-btn')) {
+                const commentIndex = event.target.dataset.index;
+                const commentText = currentComments[commentIndex];
+                
+                document.getElementById('edit-comment-text').value = commentText;
+                editCommentModal.dataset.commentIndex = commentIndex;
+                editCommentModal.style.display = 'block';
+            }
+        });
+
+        closeEditModal.addEventListener('click', function() {
+            editCommentModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target == editCommentModal) {
+                editCommentModal.style.display = 'none';
+            }
+        });
+
+        // Save edited comment
+        document.querySelector('.save-comment-btn').addEventListener('click', function() {
+            const updatedComment = document.getElementById('edit-comment-text').value.trim();
+            if (!updatedComment) {
+                alert('Please enter a comment.');
+                return;
+            }
+
+            const commentIndex = editCommentModal.dataset.commentIndex;
+
+            const formData = new FormData();
+            formData.append('action', 'edit_comment');
+            formData.append('daily_food_id', currentDailyFoodId);
+            formData.append('comment_index', commentIndex);
+            formData.append('comment', updatedComment);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch("{% url 'daily_food' %}", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    editCommentModal.style.display = 'none';
+                    // Update the comment list in the table
+                    const row = document.querySelector(`tr[data-daily-food-id="${currentDailyFoodId}"]`);
+                    const commentList = row.querySelector('.comment-list');
+                    commentList.innerHTML = '';
+                    data.comments.forEach(comment => {
+                        const li = document.createElement('li');
+                        li.textContent = comment;
+                        commentList.appendChild(li);
+                    });
+                    // Update currentComments for the modal
+                    currentComments = data.comments;
+                    const existingCommentsUl = document.getElementById('existing-comments');
+                    existingCommentsUl.innerHTML = '';
+                    currentComments.forEach((comment, index) => {
+                        const li = document.createElement('li');
+                        li.textContent = comment;
+                        li.innerHTML += ` <button class="edit-comment-btn" data-index="${index}">Edit</button>`;
+                        existingCommentsUl.appendChild(li);
+                    });
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => alert('An error occurred: ' + error.message));
+        });
+    </script>
+</body>
+</html>

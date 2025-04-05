@@ -1,0 +1,644 @@
+.table-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    margin-bottom: 30px;
+    overflow-x: auto;
+}
+
+.futuristic-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+}
+
+.futuristic-table textarea.editable {
+    height: 60px;
+    resize: vertical;
+}
+
+.futuristic-table th {
+    background: linear-gradient(45deg, #00ffff, #00ffcc);
+    color: #0f0c29;
+    font-family: 'Orbitron', sans-serif;
+    padding: 15px;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    border-bottom: 2px solid rgba(0, 255, 255, 0.5);
+}
+
+.futuristic-table td {
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    vertical-align: middle;
+}
+
+.futuristic-table tr {
+    transition: all 0.3s ease;
+}
+
+.futuristic-table tr:hover {
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.trainer-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    margin-bottom: 5px;
+}
+
+.image-upload {
+    display: block;
+    font-size: 0.8rem;
+    color: #00ffff;
+}
+
+.editable {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    color: #fff;
+    width: 100%;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.editable:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+.status-toggle {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px !important; /* Ensure gap is applied */
+    align-items: center;
+    justify-content: center; /* Center the buttons vertically */
+    min-height: 60px; /* Ensure consistent height for alignment */
+}
+
+.edit-btn, .delete-btn, .mark-attendance-btn, .view-history-btn, .add-comment-btn, .submit-comment-btn, .save-comment-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100px; /* Slightly wider for better readability */
+    text-align: center;
+}
+
+.edit-btn, .mark-attendance-btn, .submit-comment-btn, .save-comment-btn {
+    background: linear-gradient(45deg, #00ffff, #00ffcc);
+    color: #0f0c29;
+    margin-bottom: 10px !important; /* Fallback for gap */
+}
+
+.edit-btn:hover, .mark-attendance-btn:hover, .submit-comment-btn:hover, .save-comment-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+}
+
+.add-comment-btn {
+    background: linear-gradient(45deg, #ff00cc, #ff3399); /* Pink gradient for distinction */
+    color: #fff;
+}
+
+.add-comment-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 0, 204, 0.4);
+}
+
+.view-history-btn {
+    background: linear-gradient(45deg, #ffcc00, #ff9900);
+    color: #0f0c29;
+}
+
+.view-history-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 204, 0, 0.4);
+}
+
+.delete-btn {
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    color: #fff;
+}
+
+.delete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+}
+
+/* Filter Container */
+.filter-container {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-container label {
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffff;
+    font-size: 1.1rem;
+}
+
+.filter-container select, .status-select, .attendance-select {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 30px;
+}
+
+.filter-container select:focus, .status-select:focus, .attendance-select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+.filter-container select option, .status-select option, .attendance-select option {
+    background: #0f0c29;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    padding: 10px;
+}
+
+.filter-container select:hover, .status-select:hover, .attendance-select:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.filter-container select:focus option, .status-select:focus option, .attendance-select:focus option {
+    background: #0f0c29;
+    color: #fff;
+}
+
+.status-select, .attendance-select {
+    width: 120px;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Darker overlay for better contrast */
+    backdrop-filter: blur(8px); /* Increased blur for a more futuristic effect */
+}
+
+.modal-content {
+    background: linear-gradient(135deg, rgba(15, 12, 41, 0.9), rgba(48, 43, 99, 0.9)); /* Gradient background */
+    border: 2px solid #00ffff; /* Cyan border for a glowing effect */
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 700px;
+    margin: 5% auto;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), inset 0 0 10px rgba(0, 255, 255, 0.3); /* Outer and inner glow */
+    animation: modalFadeIn 0.3s ease-in-out; /* Fade-in animation */
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    color: #00ffff;
+    text-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+}
+
+.modal-content h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    color: #ff00cc; /* Pink for distinction */
+    text-shadow: 0 0 10px rgba(255, 0, 204, 0.5);
+    margin-bottom: 15px;
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    color: #fff;
+    font-size: 32px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close:hover {
+    color: #ff00cc; /* Pink on hover */
+    text-shadow: 0 0 10px rgba(255, 0, 204, 0.7);
+}
+
+/* Form Container in Modal */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group label {
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffff;
+    font-size: 1.2rem;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+}
+
+.form-group textarea {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    width: 100%;
+    height: 120px;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    opacity: 1;
+}
+
+/* Comment List */
+.comment-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.comment-list li {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+    word-break: break-word;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.comment-list li:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Edit Comment Button in Modal */
+.edit-comment-btn {
+    background: linear-gradient(45deg, #ffcc00, #ff9900);
+    color: #0f0c29;
+    border: none;
+    border-radius: 10px;
+    padding: 5px 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.edit-comment-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(255, 204, 0, 0.4);
+}
+
+/* Action Container */
+.action-container {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.send-email-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(45deg, #00ccff, #0099ff);
+    color: #0f0c29;
+}
+
+.send-email-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 153, 255, 0.4);
+}
+
+/* Email Modal Form */
+#email-modal .form-group input,
+#email-modal .form-group textarea {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+#email-modal .form-group textarea {
+    height: 150px;
+    resize: vertical;
+}
+
+#email-modal .form-group input:focus,
+#email-modal .form-group textarea:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+#email-modal .form-group input::placeholder,
+#email-modal .form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    opacity: 1;
+}
+
+#email-modal .form-group {
+    margin-bottom: 20px;
+}
+
+#email-modal .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#email-modal .send-email-submit {
+    margin-top: 20px;
+}
+
+.send-email-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .action-container {
+        justify-content: center;
+    }
+
+    .send-email-btn {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    .filter-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-container select, .status-select, .attendance-select {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .status-select, .attendance-select {
+        width: 100px;
+    }
+
+    .futuristic-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .futuristic-table th, .futuristic-table td {
+        min-width: 120px;
+    }
+
+    .trainer-img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .edit-btn, .delete-btn, .mark-attendance-btn, .view-history-btn, .add-comment-btn, .submit-comment-btn, .save-comment-btn {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        width: 90px;
+    }
+
+    .edit-btn, .mark-attendance-btn, .submit-comment-btn, .save-comment-btn {
+        margin-bottom: 8px !important;
+    }
+
+    .action-buttons {
+        gap: 8px !important;
+    }
+
+    .image-upload {
+        font-size: 0.7rem;
+    }
+
+    .modal-content {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    .modal-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .modal-content h3 {
+        font-size: 1.2rem;
+    }
+
+    .form-group textarea {
+        height: 100px;
+    }
+}
+
+/* Upload Form */
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group label {
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffff;
+    font-size: 1.2rem;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+}
+
+.form-group textarea {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    width: 100%;
+    height: 150px;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    opacity: 1;
+}
+
+.form-group input[type="file"] {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.form-group input[type="file"]::-webkit-file-upload-button {
+    background: linear-gradient(45deg, #00ffff, #00ffcc);
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    color: #0f0c29;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-group input[type="file"]::-webkit-file-upload-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+}
+
+.upload-btn {
+    background: linear-gradient(45deg, #ff00cc, #ff3399); /* Pink gradient for distinction */
+    color: #fff;
+    align-self: center;
+    padding: 10px 20px;
+    width: 150px;
+}
+
+.upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 0, 204, 0.4);
+}
+
+/* Success and Error Messages */
+.success-message, .error-message {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.success-message {
+    background: rgba(0, 255, 0, 0.2);
+    color: #00ff00;
+}
+
+.error-message {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff0000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .upload-form {
+        padding: 0 10px;
+    }
+
+    .form-group textarea {
+        height: 120px;
+    }
+
+    .upload-btn {
+        padding: 8px 15px;
+        width: 130px;
+    }
+}

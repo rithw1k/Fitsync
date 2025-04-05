@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainer Reviews</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="logo-container">
+                <div class="logo-wrapper">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+                </div>
+                <span class="greeting">Hi, {{ trainer.name }}</span>
+            </div>
+            <button class="logout-btn" onclick="window.location.href='{% url 'logout' %}'">Logout</button>
+        </header>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="dashboard-nav">
+            <div class="nav-item">
+                <button class="nav-btn" onclick="window.location.href='{% url 'trainer_dashboard' %}'">Home</button>
+            </div>
+            <div class="nav-item active">
+                <button class="nav-btn">Users ▼</button>
+                <div class="dropdown">
+                    <a href="{% url 'view_bookings' %}">Bookings</a>
+                    <a href="{% url 'daily_food' %}">Daily Food</a>
+                    <a href="{% url 'review_trainer' %}" class="active">Reviews</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <button class="nav-btn">Videos ▼</button>
+                <div class="dropdown">
+                    <a href="{% url 'upload_video' %}">Upload</a>
+                    <a href="{% url 'manage_videos' %}">Manage</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Reviews Table -->
+        <div class="table-container">
+            <h2 class="form-title">My Reviews</h2>
+            <table class="futuristic-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviews %}
+                    <tr>
+                        <td>{{ review.username }}</td>
+                        <td>{{ review.rating }} / 5</td>
+                        <td>{{ review.comment }}</td>
+                        <td>{{ review.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>{{ review.updated_at|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">No reviews found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const nav = document.querySelector('.dashboard-nav');
+        
+        menuToggle.addEventListener('click', function() {
+            nav.classList.toggle('active');
+            menuToggle.classList.toggle('open');
+        });
+
+        // Handle dropdowns in mobile view
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    const dropdown = this.nextElementSibling;
+                    if (dropdown) {
+                        dropdown.classList.toggle('active');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
