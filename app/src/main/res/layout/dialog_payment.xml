@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Payment Details"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="16dp" />
+
+    <EditText
+        android:id="@+id/creditCardInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Credit Card (16 digits)"
+        android:inputType="number"
+        android:maxLength="16" />
+
+    <EditText
+        android:id="@+id/cvvInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="CVV (3 digits)"
+        android:inputType="number"
+        android:maxLength="3" />
+
+    <EditText
+        android:id="@+id/expiryDateInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Expiry Date (MM/YY)"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/locationInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Location"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/submitPaymentButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit Payment"
+        android:backgroundTint="#2196F3"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="16dp" />
+</LinearLayout>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center_horizontal">
+
+        <!-- Logo -->
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="50dp"
+            android:src="@drawable/logo" />
+
+        <!-- Futuristic Title -->
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Join FitSync"
+            android:textSize="36sp"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="20dp"
+            android:shadowColor="#80000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4"/>
+
+        <!-- Username -->
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:hint="Username"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#B0FFFFFF"
+            android:background="@drawable/neumorphic_input"
+            android:padding="12dp"
+            android:inputType="text"/>
+
+        <!-- Email -->
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Email"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#B0FFFFFF"
+            android:background="@drawable/neumorphic_input"
+            android:padding="12dp"
+            android:inputType="textEmailAddress"/>
+
+        <!-- Password -->
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Password"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#B0FFFFFF"
+            android:background="@drawable/neumorphic_input"
+            android:padding="12dp"
+            android:inputType="textPassword"/>
+
+        <!-- Signup Button -->
+        <Button
+            android:id="@+id/signupButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Sign Up"
+            android:textSize="18sp"
+            android:background="@drawable/futuristic_button"
+            android:textColor="#FFFFFF"/>
+
+        <!-- Login Link -->
+        <TextView
+            android:id="@+id/loginLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:text="Already a User? Login"
+            android:textColor="#00FFFF"
+            android:textSize="16sp"/>
+    </LinearLayout>
+</ScrollView>

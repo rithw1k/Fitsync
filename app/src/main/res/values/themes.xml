@@ -1,0 +1,16 @@
+<resources>
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!-- Ensure no action bar is used -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="RatingBarTheme" parent="Widget.AppCompat.RatingBar">
+        <item name="android:progressTint">#FFD700</item>
+        <item name="android:secondaryProgressTint">#CCCCCC</item>
+    </style>
+</resources>
